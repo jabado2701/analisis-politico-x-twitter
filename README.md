@@ -1,6 +1,3 @@
-¡Claro! Aquí te lo dejo **completo, en una sola pieza**, listo para copiar/pegar directamente como `README.md`:
-
----
 
 ```markdown
 # 📊 Análisis Político en X/Twitter
@@ -18,7 +15,6 @@ Esta aplicación en Streamlit permite analizar la actividad de políticos españ
 
 ## 📁 Estructura del proyecto
 
-```
 
 analisis-politico-x-twitter/
 ├── analisis\_avanzado/
@@ -35,8 +31,6 @@ analisis-politico-x-twitter/
 ├── display.py
 ├── requirements.txt
 └── README.md
-
-````
 
 ## ⚙️ Requisitos
 
