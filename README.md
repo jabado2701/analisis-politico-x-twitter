@@ -1,6 +1,4 @@
-```
 
-```
 # 📊 Análisis Político en X/Twitter
 ```
 Esta aplicación en Streamlit permite analizar la actividad de políticos españoles en la red social X/Twitter, utilizando datos de carácter público (extraídos de fuentes oficiales como el Congreso de los Diputados o Wikipedia). Incluye análisis básico y avanzado con diferentes visualizaciones interactivas.
@@ -82,3 +80,4 @@ La app está preparada para ser desplegada directamente en [Streamlit Cloud](htt
 ## ⚠️ Aviso de privacidad
 
 Esta aplicación **no** gestiona datos privados ni sensibles. Todos los datos provienen de fuentes públicas.
+```
