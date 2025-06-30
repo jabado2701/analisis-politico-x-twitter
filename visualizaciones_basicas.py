@@ -29,6 +29,8 @@ def mostrar_graficos_basicos(df: pd.DataFrame, tipo: str, columnas: list):
                 color=col if col == "Partido" else None,
                 color_discrete_map=COLOR_PARTIDOS if col == "Partido" else generar_paleta(df[col].unique())
             )
+            fig.update_traces(hovertemplate="%{label}=%{value}")
+
             fig.update_layout(width=1200, height=600)
             st.plotly_chart(fig)
 
