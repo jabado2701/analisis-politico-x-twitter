@@ -12,8 +12,7 @@ def ajustar_nombres_ccaa(
     unificar criterios con el geojson de mapas.
     """
     df[columna] = df[columna].replace({
-        "Castilla-La Mancha": "Castilla - La Mancha",
-        "Islas Baleares": "Illes Balears"
+        "Castilla-La Mancha": "Castilla - La Mancha"
     })
     return df
 
