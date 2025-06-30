@@ -80,4 +80,4 @@ La app está preparada para ser desplegada directamente en [Streamlit Cloud](htt
 ## ⚠️ Aviso de privacidad
 
 Esta aplicación **no** gestiona datos privados ni sensibles. Todos los datos provienen de fuentes públicas.
-```
+
