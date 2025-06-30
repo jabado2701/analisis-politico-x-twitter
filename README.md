@@ -1,20 +1,21 @@
 
 ```markdown
+````
 # 📊 Análisis Político en X/Twitter
-
+````
 Esta aplicación en Streamlit permite analizar la actividad de políticos españoles en la red social X/Twitter, utilizando datos de carácter público (extraídos de fuentes oficiales como el Congreso de los Diputados o Wikipedia). Incluye análisis básico y avanzado con diferentes visualizaciones interactivas.
-
+````
 ## 🚀 Funcionalidades
-
+````
 ✅ Distribución de actividad por partido y político  
 ✅ Evolución temporal de publicaciones  
 ✅ Popularidad y tasas de seguidores  
 ✅ Mapas coropléticos por Comunidad Autónoma  
 ✅ Análisis de tono del discurso  
 ✅ Tokens y entidades más frecuentes en mensajes  
-
+````
 ## 📁 Estructura del proyecto
-
+````
 
 analisis-politico-x-twitter/
 ├── analisis\_avanzado/
@@ -31,9 +32,9 @@ analisis-politico-x-twitter/
 ├── display.py
 ├── requirements.txt
 └── README.md
-
+````
 ## ⚙️ Requisitos
-
+````
 - Python 3.9+  
 - Streamlit  
 - pandas  
