@@ -7,13 +7,13 @@ class AppController:
 
         # columnas que se excluyen por defecto del filtrado
         self.excluir = [
-            'ID_Político', 'Nombre', 'Twitter', 'Legislaturas', 'Descripción',
+            'ID_Político', 'Twitter', 'Legislaturas', 'Descripción',
             'Interacción_Relativa', 'Interacción', 'Posts_extraidos',
             'Tasa_Seguidores_Año', 'Tasa_Posts_Año'
         ]
         # columnas que no se grafican (numéricas puras)
         self.no_graficar = [
-            'Edad', 'Posts', 'Seguidores', 'Comienzo en X/Twitter',
+            'Edad','Nombre', 'Posts', 'Seguidores', 'Comienzo en X/Twitter',
             'Likes', 'Retweets', 'Comentarios_Totales'
         ]
 
