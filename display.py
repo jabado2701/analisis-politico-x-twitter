@@ -1,9 +1,9 @@
 import streamlit as st
 import visualizaciones_basicas as vb
-import analisis_avanzado.popularidad_actividad as pop
-import analisis_avanzado.interaccion_impacto as inter
-import analisis_avanzado.tono_discurso as tono
-import analisis_avanzado.contenido_tokens as cont
+import analisis_en_profundidad.popularidad_actividad as pop
+import analisis_en_profundidad.interaccion_impacto as inter
+import analisis_en_profundidad.tono_discurso as tono
+import analisis_en_profundidad.contenido_tokens as cont
 import pandas as pd
 
 
@@ -29,7 +29,7 @@ def mostrar_basico(
         vb.mostrar_tabla_metadata(df_filtrado)
 
 
-def mostrar_analisis_avanzado(
+def mostrar_analisis_en_profundidad(
     df_filtrado: pd.DataFrame,
     df_posts: pd.DataFrame,
     df_comentarios: pd.DataFrame,
@@ -40,7 +40,6 @@ def mostrar_analisis_avanzado(
     organizado en 4 bloques temáticos y subapartados con expanders
     """
 
-    # 1️⃣ Popularidad y Actividad
     with st.expander("👤 Popularidad y Actividad"):
         with st.expander("📈 Popularidad"):
             pop.grafico_top10_politicos_seguidores(df_filtrado)
@@ -71,7 +70,6 @@ def mostrar_analisis_avanzado(
                 label="Nº medio de publicaciones"
             )
 
-    # 2️⃣ Interacción e Impacto
     with st.expander("🔁 Interacción e Impacto"):
         with st.expander("💬 Interacción absoluta"):
             inter.grafico_top10_interaccion(df_filtrado)
@@ -89,7 +87,6 @@ def mostrar_analisis_avanzado(
                 label="Interacción / Seguidor"
             )
 
-    # 3️⃣ Tono del Discurso
     with st.expander("🗣️ Tono del Discurso"):
         with st.expander("📊 Proporción de tono"):
             tono.graficos_proporcion_tono_partido(df_posts, df_filtrado)
@@ -99,7 +96,6 @@ def mostrar_analisis_avanzado(
         with st.expander("📚 Tono por tema"):
             tono.graficar_tono_por_tema_individual(df_posts, df_filtrado)
 
-    # 4️⃣ Contenido
     with st.expander("🧾 Contenido: Palabras clave y Entidades"):
         with st.expander("🔠 Frecuencias"):
             cont.analizar_tokens_entidades(df_posts, df_comentarios, df_filtrado)

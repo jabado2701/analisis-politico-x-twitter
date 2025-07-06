@@ -3,11 +3,8 @@ import plotly.graph_objects as go
 import plotly.express as px
 import pandas as pd
 from config import COLOR_PARTIDOS
-from analisis_avanzado.utils import ajustar_nombres_ccaa, plot_top10_bar
+from analisis_en_profundidad.utils import ajustar_nombres_ccaa, plot_top10_bar
 
-# ---------------------------------------------------------
-# FUNCIONES AUXILIARES
-# ---------------------------------------------------------
 
 def plot_top10_partidos_bar(
     df: pd.DataFrame,
@@ -24,8 +21,8 @@ def plot_top10_partidos_bar(
         .nlargest(10, value_col)
     )
 
-    partidos = top10["Partido"].tolist()
-    valores = top10[value_col].tolist()
+    partidos = top10.sort_values(value_col, ascending=False)["Partido"].tolist()
+    valores = top10.sort_values(value_col, ascending=False)[value_col].tolist()
     colores = [COLOR_PARTIDOS.get(p, "#cccccc") for p in partidos]
 
     fig = go.Figure([
@@ -43,7 +40,7 @@ def plot_top10_partidos_bar(
         xaxis=dict(
             title="Partido",
             categoryorder="array",
-            categoryarray=partidos[::-1]
+            categoryarray=partidos
         ),
         yaxis_title=yaxis_title,
         width=900,
@@ -67,9 +64,7 @@ def calcular_tasa_publicacion(df: pd.DataFrame, año_actual: int = 2025) -> pd.D
     )
     return df
 
-# ---------------------------------------------------------
-# FUNCIONES DE VISUALIZACIÓN
-# ---------------------------------------------------------
+
 
 def grafico_top10_politicos_seguidores(df: pd.DataFrame) -> None:
     plot_top10_bar(
@@ -122,8 +117,8 @@ def grafico_top10_tasa_posts_partido(df: pd.DataFrame) -> None:
         .head(10)
     )
 
-    partidos = top10["Partido"].tolist()
-    tasas = top10["Tasa_Posts_Año"].tolist()
+    partidos = top10.sort_values("Tasa_Posts_Año", ascending=False)["Partido"].tolist()
+    tasas = top10.sort_values("Tasa_Posts_Año", ascending=False)["Tasa_Posts_Año"].tolist()
     colores = [COLOR_PARTIDOS.get(p, "#cccccc") for p in partidos]
 
     fig = go.Figure([
@@ -141,7 +136,7 @@ def grafico_top10_tasa_posts_partido(df: pd.DataFrame) -> None:
         xaxis=dict(
             title="Partido",
             categoryorder="array",
-            categoryarray=partidos[::-1]
+            categoryarray=partidos
         ),
         yaxis_title="Posts por año (promedio)",
         width=900,
@@ -169,8 +164,8 @@ def grafico_top10_tasa_seguidores_partido(df: pd.DataFrame) -> None:
         .head(10)
     )
 
-    partidos = top10["Partido"].tolist()
-    tasas = top10["Tasa_Seguidores_Año"].tolist()
+    partidos = top10.sort_values("Tasa_Seguidores_Año", ascending=False)["Partido"].tolist()
+    tasas = top10.sort_values("Tasa_Seguidores_Año", ascending=False)["Tasa_Seguidores_Año"].tolist()
     colores = [COLOR_PARTIDOS.get(p, "#cccccc") for p in partidos]
 
     fig = go.Figure([
@@ -188,7 +183,7 @@ def grafico_top10_tasa_seguidores_partido(df: pd.DataFrame) -> None:
         xaxis=dict(
             title="Partido",
             categoryorder="array",
-            categoryarray=partidos[::-1]
+            categoryarray=partidos
         ),
         yaxis_title="Seguidores por año (promedio)",
         width=900,

@@ -5,13 +5,11 @@ class AppController:
     def __init__(self, df_metadata: pd.DataFrame):
         self.df_metadata = df_metadata
 
-        # columnas que se excluyen por defecto del filtrado
         self.excluir = [
             'ID_Político', 'Twitter', 'Legislaturas', 'Descripción',
             'Interacción_Relativa', 'Interacción', 'Posts_extraidos',
             'Tasa_Seguidores_Año', 'Tasa_Posts_Año'
         ]
-        # columnas que no se grafican (numéricas puras)
         self.no_graficar = [
             'Edad','Nombre', 'Posts', 'Seguidores', 'Comienzo en X/Twitter',
             'Likes', 'Retweets', 'Comentarios_Totales'
@@ -30,7 +28,6 @@ class AppController:
 
         for col in self.columnas_filtrables:
 
-            # Filtros de tipo numérico
             if col in ['Edad', 'Posts', 'Seguidores', 'Likes', 'Retweets', 'Comentarios_Totales']:
                 min_val, max_val = int(df_filtrado[col].min()), int(df_filtrado[col].max())
                 if min_val == max_val:
@@ -40,7 +37,6 @@ class AppController:
                     rango = st.sidebar.slider(col, min_val, max_val, (min_val, max_val))
                 df_filtrado = df_filtrado[(df_filtrado[col] >= rango[0]) & (df_filtrado[col] <= rango[1])]
 
-            # Filtros de tipo fecha
             elif col == "Comienzo en X/Twitter":
                 min_fecha, max_fecha = df_filtrado[col].min(), df_filtrado[col].max()
                 if min_fecha == max_fecha:
@@ -54,7 +50,6 @@ class AppController:
                     (df_filtrado[col] >= fechas[0]) & (df_filtrado[col] <= fechas[1])
                 ]
 
-            # Filtros multiselección con texto separado por coma
             elif col == "Rango_Legislaturas":
                 opciones = df_filtrado[col].dropna().str.split(", ").explode().unique()
                 if len(opciones) == 1:
@@ -69,7 +64,6 @@ class AppController:
                         )
                     ]
 
-            # Filtros multiselección numéricos
             elif col == "Número de Legislaturas":
                 opciones = sorted(df_filtrado[col].dropna().unique())
                 if len(opciones) == 1:
@@ -80,7 +74,6 @@ class AppController:
                 if seleccionadas:
                     df_filtrado = df_filtrado[df_filtrado[col].isin(seleccionadas)]
 
-            # Filtros multiselección generales
             else:
                 opciones = df_filtrado[col].dropna().unique()
                 if len(opciones) == 1:
@@ -98,7 +91,7 @@ class AppController:
         st.sidebar.header("📊 Tipo de análisis")
         tipo_analisis = st.sidebar.radio(
             "Selecciona el tipo de análisis:",
-            ["Análisis básico", "Análisis avanzado"],
+            ["Análisis básico", "Análisis en profundidad"],
             index=0
         )
         return tipo_analisis
@@ -110,14 +103,13 @@ class AppController:
         - Mostrar todas
         - Mostrar gráficas personalizadas con Limitar/Excluir
         """
-        if tipo_grafico == "Análisis avanzado":
+        if tipo_grafico == "Análisis en profundidad":
             return []
 
         disponibles = self.columnas_graficables
         extras = ["Actividad temporal", "Tabla de metadata"]
         todas_opciones = extras + disponibles
 
-        # Modo general
         modo = st.sidebar.radio(
             "¿Cómo deseas mostrar las gráficas?",
             ["Mostrar todas", "Elegir gráficas personalizadas"],
@@ -127,7 +119,6 @@ class AppController:
         if modo == "Mostrar todas":
             return todas_opciones
 
-        # Modo personalizado
         seleccionadas = st.sidebar.multiselect(
             "Selecciona las gráficas personalizadas",
             todas_opciones

@@ -6,9 +6,6 @@ import ast
 from typing import List, Tuple, Dict
 
 
-# ----------------------------------------------------------
-# FUNCIONES AUXILIARES
-# ----------------------------------------------------------
 
 @st.cache_data
 def deserializar_columnas(df: pd.DataFrame, columnas: List[str]) -> pd.DataFrame:
@@ -28,7 +25,7 @@ def contar_mas_frecuentes(lista_columnas: pd.Series, top_n: int = 20) -> List[Tu
     elementos = [
         item
         for sublista in lista_columnas.dropna()
-        if isinstance(sublista, list) and sublista  # sublista no vacía
+        if isinstance(sublista, list) and sublista  
         for item in sublista
     ]
     return Counter(elementos).most_common(top_n)
@@ -39,7 +36,7 @@ def graficar_top(counter_list: List[Tuple[str, int]], titulo: str) -> None:
     Gráfico de barras de los términos más frecuentes.
     """
     df = pd.DataFrame(counter_list, columns=["Término", "Frecuencia"])
-    orden = df["Término"].tolist()[::-1]
+    orden = df["Término"].tolist()
     fig = px.bar(df, x="Término", y="Frecuencia", title=titulo)
     fig.update_layout(
         xaxis_tickangle=-45,
@@ -51,9 +48,6 @@ def graficar_top(counter_list: List[Tuple[str, int]], titulo: str) -> None:
     st.plotly_chart(fig)
 
 
-# ----------------------------------------------------------
-# FUNCIONES PRINCIPALES
-# ----------------------------------------------------------
 
 def analizar_tokens_entidades(
     df_posts: pd.DataFrame,
@@ -65,13 +59,11 @@ def analizar_tokens_entidades(
     teniendo en cuenta los filtros aplicados.
     """
 
-    # aplicar filtrado
     ids_filtrados = df_filtrado["ID_Político"].unique()
     df_posts_filtrado = df_posts[df_posts["ID_Político"].isin(ids_filtrados)].copy()
     enlaces_validos = df_posts_filtrado["Enlace_Post"].unique()
     df_comentarios_filtrado = df_comentarios[df_comentarios["Enlace_Post"].isin(enlaces_validos)].copy()
 
-    # deserializar
     columnas_posts = ["Corpus_Tokens", "Entidades"]
     columnas_comentarios = [
         "Corpus_Tokens_Comentarios", "Entidades_Comentarios",
@@ -80,7 +72,6 @@ def analizar_tokens_entidades(
     df_posts_filtrado = deserializar_columnas(df_posts_filtrado, columnas_posts)
     df_comentarios_filtrado = deserializar_columnas(df_comentarios_filtrado, columnas_comentarios)
 
-    # contar
     top_tokens = {
         "Posts": contar_mas_frecuentes(df_posts_filtrado["Corpus_Tokens"]),
         "Comentarios": contar_mas_frecuentes(df_comentarios_filtrado["Corpus_Tokens_Comentarios"]),
@@ -135,20 +126,17 @@ def analizar_tokens_entidades_por_tono(
     Tokens y entidades más frecuentes por tono, considerando los filtros activos.
     """
 
-    # aplicar filtrado
     ids_filtrados = df_filtrado["ID_Político"].unique()
     df_posts_filtrado = df_posts[df_posts["ID_Político"].isin(ids_filtrados)].copy()
     enlaces_validos = df_posts_filtrado["Enlace_Post"].unique()
     df_comentarios_filtrado = df_comentarios[df_comentarios["Enlace_Post"].isin(enlaces_validos)].copy()
 
-    # deserializar
     df_posts_filtrado = deserializar_columnas(df_posts_filtrado, ["Corpus_Tokens", "Entidades"])
     df_comentarios_filtrado = deserializar_columnas(df_comentarios_filtrado, [
         "Corpus_Tokens_Comentarios", "Entidades_Comentarios",
         "Corpus_Tokens_Respuestas", "Entidades_Respuestas"
     ])
 
-    # contar
     tokens_por_tono = {
         "Posts": contar_por_tono(df_posts_filtrado, "Corpus_Tokens", "Tono"),
         "Comentarios": contar_por_tono(df_comentarios_filtrado, "Corpus_Tokens_Comentarios", "Tono"),
@@ -160,7 +148,6 @@ def analizar_tokens_entidades_por_tono(
         "Respuestas": contar_por_tono(df_comentarios_filtrado, "Entidades_Respuestas", "Tono_Respuesta")
     }
 
-    # visualizar
     with st.expander("🔍 Tokens y Entidades más frecuentes por tono"):
         st.subheader("Tokens por tono")
         for fuente, valores in tokens_por_tono.items():
@@ -210,7 +197,6 @@ def comparar_tops(
         cat: top_elementos(df[df[columna_categoria] == cat], columna_elementos, n)
         for cat in categorias
     }
-    # solo calcular comunes si hay más de 1 categoría con datos
     comunes = set.intersection(*tops.values()) if len([s for s in tops.values() if s]) > 1 else set()
     exclusivos = {
         cat: tops[cat] - set.union(*(tops[c] for c in tops if c != cat))
@@ -249,22 +235,18 @@ def comparar_tops_streamlit(
     """
     categorias = ["Posts", "Comentarios", "Respuestas"]
 
-    # Filtrar posts por los ID_Político del filtrado
     ids_filtrados = df_filtrado["ID_Político"].unique()
     df_posts_filtrado = df_posts[df_posts["ID_Político"].isin(ids_filtrados)].copy()
 
-    # Filtrar comentarios por los Enlace_Post de los posts válidos
     enlaces_validos = df_posts_filtrado["Enlace_Post"].unique()
     df_comentarios_filtrado = df_comentarios[df_comentarios["Enlace_Post"].isin(enlaces_validos)].copy()
 
-    # deserializar
     df_posts_filtrado = deserializar_columnas(df_posts_filtrado, ["Corpus_Tokens", "Entidades"])
     df_comentarios_filtrado = deserializar_columnas(df_comentarios_filtrado, [
         "Corpus_Tokens_Comentarios", "Entidades_Comentarios",
         "Corpus_Tokens_Respuestas", "Entidades_Respuestas"
     ])
 
-    # tokens
     df_tokens = pd.concat([
         df_posts_filtrado.assign(Tipo="Posts", Tokens=df_posts_filtrado["Corpus_Tokens"]),
         df_comentarios_filtrado.assign(Tipo="Comentarios", Tokens=df_comentarios_filtrado["Corpus_Tokens_Comentarios"]),
@@ -272,7 +254,6 @@ def comparar_tops_streamlit(
     ])
     tops_tokens, comunes_tokens, exclusivos_tokens = comparar_tops(df_tokens, "Tokens", "Tipo", categorias)
 
-    # entidades
     df_ents = pd.concat([
         df_posts_filtrado.assign(Tipo="Posts", Ents=df_posts_filtrado["Entidades"]),
         df_comentarios_filtrado.assign(Tipo="Comentarios", Ents=df_comentarios_filtrado["Entidades_Comentarios"]),
@@ -295,11 +276,9 @@ def comparar_tops_por_tono_streamlit(
     """
     tonos = ["Positivo", "Negativo", "Neutro"]
 
-    # filtrar posts por los ID_Político permitidos
     ids_filtrados = df_filtrado["ID_Político"].unique()
     df_posts_filtrado = df_posts[df_posts["ID_Político"].isin(ids_filtrados)].copy()
 
-    # deserializar
     df_posts_filtrado = deserializar_columnas(df_posts_filtrado, ["Corpus_Tokens", "Entidades"])
 
     df_tokens = df_posts_filtrado.rename(columns={"Corpus_Tokens": "Tokens"})
@@ -322,20 +301,16 @@ def comparar_tops_por_tema_streamlit(
     Compara tokens/entidades entre temas,
     aplicando filtros activos de df_filtrado.
     """
-    # filtrar posts por ID_Político en el filtrado
     ids_filtrados = df_filtrado["ID_Político"].unique()
     df_posts_filtrado = df_posts[df_posts["ID_Político"].isin(ids_filtrados)].copy()
 
-    # deserializar
     df_posts_filtrado = deserializar_columnas(df_posts_filtrado, ["Corpus_Tokens", "Entidades"])
 
     temas = df_posts_filtrado["Tema"].dropna().unique().tolist()
 
-    # tokens
     df_tokens = df_posts_filtrado.rename(columns={"Corpus_Tokens": "Tokens"})
     tops_tokens, comunes_tokens, exclusivos_tokens = comparar_tops(df_tokens, "Tokens", "Tema", temas)
 
-    # entidades
     df_ents = df_posts_filtrado.rename(columns={"Entidades": "Ents"})
     tops_ents, comunes_ents, exclusivos_ents = comparar_tops(df_ents, "Ents", "Tema", temas)
 
@@ -355,7 +330,6 @@ def obtener_top_por_tema(
     Devuelve un diccionario con el top elementos de cada tema,
     aplicando filtros activos sobre df_filtrado.
     """
-    # filtrar posts por ID_Político permitido
     ids_filtrados = df_filtrado["ID_Político"].unique()
     df_filtrado_posts = df[df["ID_Político"].isin(ids_filtrados)].copy()
 
@@ -380,7 +354,7 @@ def graficar_top_por_tema(diccionario: Dict[str, List[Tuple[str, int]]], tipo: s
     for tema, lista in diccionario.items():
         if lista:
             df_tema = pd.DataFrame(lista, columns=["Término", "Frecuencia"])
-            orden = df_tema["Término"].tolist()[::-1]
+            orden = df_tema["Término"].tolist()
             fig = px.bar(
                 df_tema,
                 x="Término",
@@ -407,13 +381,11 @@ def analizar_tokens_entidades_por_tema(
     Muestra tokens y entidades más frecuentes por tema,
     respetando el filtrado activo.
     """
-    # filtrar posts según políticos válidos
     ids_filtrados = df_filtrado["ID_Político"].unique()
     df_posts_filtrado = df_posts[df_posts["ID_Político"].isin(ids_filtrados)].copy()
 
     df_posts_filtrado = deserializar_columnas(df_posts_filtrado, ["Corpus_Tokens", "Entidades"])
 
-    # obtener top tokens y entidades
     top_tokens = obtener_top_por_tema(df_posts_filtrado, "Corpus_Tokens", "Tema", df_filtrado)
     top_entidades = obtener_top_por_tema(df_posts_filtrado, "Entidades", "Tema", df_filtrado)
 

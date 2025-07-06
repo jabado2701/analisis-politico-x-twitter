@@ -3,7 +3,7 @@ import plotly.graph_objects as go
 import plotly.express as px
 import pandas as pd
 from config import COLOR_PARTIDOS
-from analisis_avanzado.utils import ajustar_nombres_ccaa
+from analisis_en_profundidad.utils import ajustar_nombres_ccaa
 
 
 def calcular_proporcion_tono(
@@ -51,7 +51,7 @@ def graficos_proporcion_tono_partido(
             .head(10)
         )
 
-        orden = df_tono["Partido"].iloc[::-1]
+        orden = df_tono["Partido"]
         colores = [COLOR_PARTIDOS.get(p, "#cccccc") for p in df_tono["Partido"]]
 
         fig = go.Figure([
@@ -59,7 +59,7 @@ def graficos_proporcion_tono_partido(
                 x=df_tono["Partido"],
                 y=df_tono["Proporción"],
                 marker_color=colores,
-                text=df_tono["Proporción"].apply(lambda x: f"{x:.1%}"),
+                text=df_tono["Proporción"].apply(lambda x: f"{x:.2%}"),
                 textposition="outside",
                 width=0.7
             )
@@ -89,7 +89,7 @@ def graficos_proporcion_tono_politico(
             .sort_values("Proporción", ascending=False)
             .head(10)
         )
-        orden = df_tono["Nombre"].iloc[::-1]
+        orden = df_tono["Nombre"]
 
         fig = go.Figure()
         for partido in df_tono["Partido"].unique():
@@ -99,7 +99,7 @@ def graficos_proporcion_tono_politico(
                 y=datos_partido["Proporción"],
                 name=partido,
                 marker_color=COLOR_PARTIDOS.get(partido, "#cccccc"),
-                text=datos_partido["Proporción"].apply(lambda x: f"{x:.1%}"),
+                text=datos_partido["Proporción"].apply(lambda x: f"{x:.2%}"),
                 textposition="outside",
                 width=0.7
             ))
@@ -121,7 +121,7 @@ def graficos_mapa_tono_ccaa(
     geojson_ccaa: dict
 ) -> None:
     """
-    Muestra mapas coropléticos con proporción de tonos (Positivo, Negativo, Neutro)
+    Muestra mapas de colores con proporción de tonos (Positivo, Negativo, Neutro)
     por comunidad autónoma.
     """
     posts_con_ccaa = df_posts.merge(
@@ -164,8 +164,9 @@ def graficar_tono_por_tema_individual(
     df_metadata_filtrado: pd.DataFrame
 ) -> None:
     """
-    Gráfico de barras por tema con proporciones de tono (Negativo, Neutro, Positivo),
-    filtrando solo posts de políticos que cumplen los filtros activos.
+    Gráfico pie chart por tema con proporciones de tono
+    (Negativo, Neutro, Positivo), filtrando solo posts
+    de políticos que cumplen los filtros activos.
     """
     ids_filtrados = df_metadata_filtrado["ID_Político"].unique()
     df_filtrado_posts = df_posts[df_posts["ID_Político"].isin(ids_filtrados)].copy()
@@ -175,7 +176,9 @@ def graficar_tono_por_tema_individual(
         .size()
         .reset_index(name="Cantidad")
     )
-    proporcion["Proporción"] = proporcion.groupby("Tema")["Cantidad"].transform(lambda x: x / x.sum())
+    proporcion["Proporción"] = proporcion.groupby("Tema")["Cantidad"].transform(
+        lambda x: x / x.sum()
+    )
 
     temas = proporcion["Tema"].dropna().unique()
     orden_tonos = ["Negativo", "Neutro", "Positivo"]
@@ -186,28 +189,35 @@ def graficar_tono_por_tema_individual(
         if df_tema.empty:
             continue
 
-        colores = [color_map.get(tono, "gray") for tono in df_tema["Tono"]]
+        valores = []
+        etiquetas = []
+        colores = []
+
+        for tono in orden_tonos:
+            cantidad = df_tema[df_tema["Tono"] == tono]["Cantidad"].sum()
+            if cantidad > 0:
+                valores.append(cantidad)
+                etiquetas.append(tono)
+                colores.append(color_map.get(tono, "gray"))
+
+        insidetextcolors = ["white"] * len(etiquetas)
 
         fig = go.Figure([
-            go.Bar(
-                x=df_tema["Tono"],
-                y=df_tema["Proporción"],
-                text=df_tema["Proporción"].map("{:.1%}".format),
-                textposition="outside",
-                marker_color=colores,
-                width=0.7
+            go.Pie(
+                labels=etiquetas,
+                values=valores,
+                marker_colors=colores,
+                textinfo="label+percent",
+                hovertemplate="%{label} = %{value} publicaciones<extra></extra>",
+                insidetextfont=dict(color=insidetextcolors)
             )
         ])
         fig.update_layout(
             title=f"Distribución de tono en el tema: {tema}",
-            xaxis=dict(
-                title="Tono",
-                categoryorder="array",
-                categoryarray=orden_tonos
-            ),
-            yaxis_title="Proporción",
             width=900,
             height=500,
-            margin=dict(l=20, r=20, t=50, b=100)
+            margin=dict(l=20, r=20, t=50, b=80),
+            showlegend=False
         )
         st.plotly_chart(fig)
+

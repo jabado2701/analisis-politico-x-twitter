@@ -14,6 +14,15 @@ def mostrar_graficos_basicos(df: pd.DataFrame, tipo: str, columnas: list):
     """
     Visualización de gráficos básicos tipo tarta.
     """
+    ordenes_personalizados = {
+        "Estudios": ["Secundaria", "Bachillerato", "Grado", "Postgrado"],
+        "Número de Legislaturas": ["1", "2", "3", "Más de 3"],
+        "Rango_Edad": ["30-39", "40-49", "50-59", "60-69", "70+"],
+        "Rango_Seguidores": ["1k - 10k", "10k - 100k", "100k - 1M", "Más de 1M"],
+        "Rango_Posts": ["Menos de 1k", "1k - 10k", "10k - 50k", "50k - 100k", "Más de 100k"],
+        "Comienzo en X/Twitter rango": ["Antes de 2010", "2010 - 2014", "2014 - 2019", "2020 - 2024"]
+    }
+
     for col in columnas:
         if col in ["Actividad temporal", "Tabla de metadata"]:
             continue
@@ -21,18 +30,24 @@ def mostrar_graficos_basicos(df: pd.DataFrame, tipo: str, columnas: list):
         st.markdown("---")
         st.subheader(f"📊 Distribución por {col}")
 
+        category_orders = {}
+        if col in ordenes_personalizados:
+            category_orders[col] = ordenes_personalizados[col]
+
         if tipo == "Análisis básico":
             fig = px.pie(
                 df,
                 names=col,
                 title=f"Distribución por {col}",
                 color=col if col == "Partido" else None,
-                color_discrete_map=COLOR_PARTIDOS if col == "Partido" else generar_paleta(df[col].unique())
+                color_discrete_map=COLOR_PARTIDOS if col == "Partido" else generar_paleta(df[col].unique()),
+                category_orders=category_orders if category_orders else None
             )
             fig.update_traces(hovertemplate="%{label}=%{value}")
 
             fig.update_layout(width=1200, height=600)
             st.plotly_chart(fig)
+
 
 
 @st.cache_data

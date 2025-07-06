@@ -6,9 +6,6 @@ import ast
 from typing import List, Tuple, Dict
 
 
-# ----------------------------------------------------------
-# FUNCIONES AUXILIARES
-# ----------------------------------------------------------
 
 @st.cache_data
 def deserializar_columnas(df: pd.DataFrame, columnas: List[str]) -> pd.DataFrame:
@@ -28,7 +25,7 @@ def contar_mas_frecuentes(lista_columnas: pd.Series, top_n: int = 20) -> List[Tu
     elementos = [
         item
         for sublista in lista_columnas.dropna()
-        if isinstance(sublista, list) and sublista  # sublista no vacía
+        if isinstance(sublista, list) and sublista  
         for item in sublista
     ]
     return Counter(elementos).most_common(top_n)
@@ -39,7 +36,7 @@ def graficar_top(counter_list: List[Tuple[str, int]], titulo: str) -> None:
     Gráfico de barras de los términos más frecuentes.
     """
     df = pd.DataFrame(counter_list, columns=["Término", "Frecuencia"])
-    orden = df["Término"].tolist()[::-1]
+    orden = df["Término"].tolist()
     fig = px.bar(df, x="Término", y="Frecuencia", title=titulo)
     fig.update_layout(
         xaxis_tickangle=-45,
@@ -51,9 +48,6 @@ def graficar_top(counter_list: List[Tuple[str, int]], titulo: str) -> None:
     st.plotly_chart(fig)
 
 
-# ----------------------------------------------------------
-# FUNCIONES PRINCIPALES
-# ----------------------------------------------------------
 
 def analizar_tokens_entidades(df_posts: pd.DataFrame, df_comentarios: pd.DataFrame) -> None:
     """
@@ -106,7 +100,7 @@ def contar_por_tono(
         subset = df[df[columna_tono] == tono]
         tokens_planos = [
             token for lista in subset[columna_tokens].dropna()
-            if isinstance(lista, list) and lista  # lista no vacía
+            if isinstance(lista, list) and lista  
             for token in lista
         ]
         resultados[tono] = Counter(tokens_planos).most_common(top_n)
@@ -182,7 +176,6 @@ def comparar_tops(
         cat: top_elementos(df[df[columna_categoria] == cat], columna_elementos, n)
         for cat in categorias
     }
-    # solo calcular comunes si hay más de 1 categoría con datos
     comunes = set.intersection(*tops.values()) if len([s for s in tops.values() if s]) > 1 else set()
     exclusivos = {
         cat: tops[cat] - set.union(*(tops[c] for c in tops if c != cat))
@@ -216,14 +209,12 @@ def comparar_tops_streamlit(df_posts: pd.DataFrame, df_comentarios: pd.DataFrame
     """
     categorias = ["Posts", "Comentarios", "Respuestas"]
 
-    # Aseguramos que las columnas de tokens y entidades están listas
     df_posts = deserializar_columnas(df_posts, ["Corpus_Tokens", "Entidades"])
     df_comentarios = deserializar_columnas(df_comentarios, [
         "Corpus_Tokens_Comentarios", "Entidades_Comentarios",
         "Corpus_Tokens_Respuestas", "Entidades_Respuestas"
     ])
 
-    # Concatenar tokens
     df_tokens = pd.concat([
         df_posts.assign(Tipo="Posts", Tokens=df_posts["Corpus_Tokens"]),
         df_comentarios.assign(Tipo="Comentarios", Tokens=df_comentarios["Corpus_Tokens_Comentarios"]),
@@ -232,7 +223,6 @@ def comparar_tops_streamlit(df_posts: pd.DataFrame, df_comentarios: pd.DataFrame
 
     tops_tokens, comunes_tokens, exclusivos_tokens = comparar_tops(df_tokens, "Tokens", "Tipo", categorias)
 
-    # Concatenar entidades
     df_ents = pd.concat([
         df_posts.assign(Tipo="Posts", Ents=df_posts["Entidades"]),
         df_comentarios.assign(Tipo="Comentarios", Ents=df_comentarios["Entidades_Comentarios"]),
@@ -254,11 +244,9 @@ def comparar_tops_por_tono_streamlit(df_posts: pd.DataFrame) -> None:
 
     df_posts = deserializar_columnas(df_posts, ["Corpus_Tokens", "Entidades"])
 
-    # Preparar tokens
     df_tokens = df_posts.rename(columns={"Corpus_Tokens": "Tokens"})
     tops_tokens, comunes_tokens, exclusivos_tokens = comparar_tops(df_tokens, "Tokens", "Tono", tonos)
 
-    # Preparar entidades
     df_ents = df_posts.rename(columns={"Entidades": "Ents"})
     tops_ents, comunes_ents, exclusivos_ents = comparar_tops(df_ents, "Ents", "Tono", tonos)
 
@@ -271,16 +259,13 @@ def comparar_tops_por_tema_streamlit(df_posts: pd.DataFrame) -> None:
     """
     Compara tokens/entidades entre temas.
     """
-    # asegurar listas deserializadas
     df_posts = deserializar_columnas(df_posts, ["Corpus_Tokens", "Entidades"])
 
     temas = df_posts["Tema"].dropna().unique().tolist()
 
-    # tokens
     df_tokens = df_posts.rename(columns={"Corpus_Tokens": "Tokens"})
     tops_tokens, comunes_tokens, exclusivos_tokens = comparar_tops(df_tokens, "Tokens", "Tema", temas)
 
-    # entidades
     df_ents = df_posts.rename(columns={"Entidades": "Ents"})
     tops_ents, comunes_ents, exclusivos_ents = comparar_tops(df_ents, "Ents", "Tema", temas)
 
@@ -313,7 +298,7 @@ def graficar_top_por_tema(diccionario: Dict[str, List[Tuple[str, int]]], tipo: s
     """
     for tema, lista in diccionario.items():
         df_tema = pd.DataFrame(lista, columns=["Término", "Frecuencia"])
-        orden = df_tema["Término"].tolist()[::-1]
+        orden = df_tema["Término"].tolist()
         fig = px.bar(
             df_tema,
             x="Término",

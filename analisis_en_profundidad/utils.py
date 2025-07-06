@@ -27,7 +27,6 @@ def plot_top10_bar(
     Genera un gráfico de barras top 10 con colores
     diferenciados por partido.
     """
-    # obtener top 10
     top10 = df[["Nombre", "Partido", value_col]].nlargest(10, value_col)
 
     fig = go.Figure()
@@ -49,7 +48,7 @@ def plot_top10_bar(
         xaxis=dict(
             title="Nombre del político",
             categoryorder="array",
-            categoryarray=top10["Nombre"].iloc[::-1]
+            categoryarray=top10["Nombre"]
         ),
         yaxis_title=yaxis_title,
         legend_title="Partido",
@@ -58,3 +57,4 @@ def plot_top10_bar(
         margin=dict(l=20, r=20, t=60, b=100)
     )
     st.plotly_chart(fig)
+

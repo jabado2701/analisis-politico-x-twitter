@@ -2,7 +2,6 @@ import plotly.express as px
 import itertools
 from typing import List, Dict
 
-# Mapa fijo de colores por partido
 COLOR_PARTIDOS: Dict[str, str] = {
     "PSOE": "#ff0000", "PP": "#189ad3", "SUMAR": "#ff0065", "VOX": "#74d600",
     "JxCAT-JUNTS": "#43e8d8", "EAJ-PNV": "#389844", "ERC": "#fdb73e",

@@ -2,11 +2,8 @@ import streamlit as st
 import plotly.graph_objects as go
 import pandas as pd
 from config import COLOR_PARTIDOS
-from analisis_avanzado.utils import plot_top10_bar
+from analisis_en_profundidad.utils import plot_top10_bar
 
-# -------------------------------------------------------
-# FUNCIONES AUXILIARES
-# -------------------------------------------------------
 
 @st.cache_data
 def calcular_interaccion_promedio(df_posts: pd.DataFrame) -> pd.DataFrame:
@@ -34,9 +31,7 @@ def calcular_interaccion_promedio(df_posts: pd.DataFrame) -> pd.DataFrame:
     return interacciones
 
 
-# -------------------------------------------------------
-# FUNCIONES DE VISUALIZACIÓN
-# -------------------------------------------------------
+
 
 def grafico_top10_interaccion(df_metadata: pd.DataFrame, df_posts: pd.DataFrame = None) -> None:
     """
@@ -70,7 +65,7 @@ def grafico_top10_interaccion(df_metadata: pd.DataFrame, df_posts: pd.DataFrame 
         xaxis=dict(
             title="Nombre del político",
             categoryorder="array",
-            categoryarray=top10["Nombre"].iloc[::-1]
+            categoryarray=top10["Nombre"]
         ),
         yaxis_title="Interacción promedio",
         legend_title="Partido",
@@ -114,7 +109,7 @@ def grafico_top10_interaccion_partido(df_metadata: pd.DataFrame) -> None:
         xaxis=dict(
             title="Partido",
             categoryorder="array",
-            categoryarray=partidos[::-1]
+            categoryarray=partidos
         ),
         yaxis_title="Interacción promedio",
         width=900,
@@ -171,7 +166,7 @@ def grafico_top10_interaccion_relativa_partidos(df_metadata: pd.DataFrame) -> No
         xaxis=dict(
             title="Partido",
             categoryorder="array",
-            categoryarray=partidos[::-1]
+            categoryarray=partidos
         ),
         yaxis_title="Interacción relativa promedio",
         width=900,
